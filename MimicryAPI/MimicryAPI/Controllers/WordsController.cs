@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MimicryAPI.DataBase;
 using MimicryAPI.Helpers;
 using MimicryAPI.Models;
+using MimicryAPI.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -12,44 +12,24 @@ namespace MimicryAPI.Controllers
     [Route("api/words")]
     public class WordsController : ControllerBase
     {
-        private readonly MimicryContext _context;
-        public WordsController(MimicryContext context)
+        private readonly IWordRepository _repository;
+        public WordsController(IWordRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [Route("")]
         [HttpGet]
         public ActionResult Get([FromQuery]WordUrlQuery wordUrlQuery)
         {
-            var words = _context.Words.AsQueryable();
+            var words = _repository.Get(wordUrlQuery);
 
-            if (wordUrlQuery.Date.HasValue)
+            if (wordUrlQuery.PageNumber.Value > words.Pagination.TotalPages)
             {
-                words = words.Where(w => w.CreationDate > wordUrlQuery.Date.Value /*|| w.ModifiedDate > date.Value*/);
+                return NotFound();
             }
 
-            if (wordUrlQuery.PageNumber.HasValue)
-            {
-                var totalRecords = words.Count();
-
-                words = words.Skip((wordUrlQuery.PageNumber.Value - 1) * wordUrlQuery.RecordPerPage.Value).Take(wordUrlQuery.RecordPerPage.Value);
-
-                var pagination = new Pagination()
-                {
-                    NumberPage = wordUrlQuery.PageNumber.Value,
-                    RecordPerPage = wordUrlQuery.RecordPerPage.Value,
-                    TotalPages = totalRecords,
-                    TotalRecord = (int)Math.Ceiling((double)totalRecords / wordUrlQuery.RecordPerPage.Value)
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(pagination));
-
-                if (wordUrlQuery.PageNumber.Value > pagination.TotalPages)
-                {
-                    return NotFound();
-                }
-            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(words.Pagination));
 
             return Ok(words);
         }
@@ -58,7 +38,7 @@ namespace MimicryAPI.Controllers
         [HttpGet]
         public ActionResult Get(int id)
         {
-            var word = _context.Words.Find(id);
+            var word = _repository.Get(id);
 
             if (word == null)
             {
@@ -73,8 +53,7 @@ namespace MimicryAPI.Controllers
         public ActionResult Add([FromBody]Word word)
         {
             word.CreationDate = DateTime.Now;
-            _context.Words.Add(word);
-            _context.SaveChanges();
+            _repository.Add(word);
 
             return Created($"/api/words/{word.Id}", word);
         }
@@ -83,7 +62,7 @@ namespace MimicryAPI.Controllers
         [HttpPut]
         public ActionResult Update(int id, [FromBody]Word word)
         {
-            var obj = _context.Words.AsNoTracking().FirstOrDefault(w => w.Id == id);
+            var obj = _repository.Get(id);
 
             if (obj == null)
             {
@@ -92,8 +71,7 @@ namespace MimicryAPI.Controllers
 
             word.Id = id;
             word.ModifiedDate = DateTime.Now;
-            _context.Words.Update(word);
-            _context.SaveChanges();
+            _repository.Update(word);
 
             return Ok();
         }
@@ -102,16 +80,14 @@ namespace MimicryAPI.Controllers
         [HttpDelete]
         public ActionResult Delete(int id)
         {
-            var word = _context.Words.Find(id);
+            var word = _repository.Get(id);
 
             if (word == null)
             {
                 return NotFound();
             }
 
-            word.Active = false;
-            _context.Words.Update(word);
-            _context.SaveChanges();
+            _repository.Delete(word);
 
             return NoContent();
         }

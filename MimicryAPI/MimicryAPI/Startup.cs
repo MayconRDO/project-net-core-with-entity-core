@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MimicryAPI.DataBase;
+using MimicryAPI.Repositories;
+using MimicryAPI.Repositories.Interfaces;
 
 namespace MimicryAPI
 {
@@ -22,6 +19,8 @@ namespace MimicryAPI
             {
                 opt.UseSqlite("Data Source=DataBase\\Mimicry.db");
             });
+
+            services.AddScoped<IWordRepository, WordRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
