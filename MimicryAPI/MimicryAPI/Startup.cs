@@ -32,7 +32,9 @@ namespace MimicryAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStatusCodePages();
             app.UseMvc();
+
         }
     }
 }
