@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MimicryAPI</name>
+    </assembly>
+    <members>
+        <member name="M:MimicryAPI.V1.Controllers.WordsController.Get(MimicryAPI.Helpers.WordUrlQuery)">
+            <summary>
+            Obter todas as palavras.
+            </summary>
+            <param name="query">Filtros de pesquisa</param>
+            <returns>Listagem de palavras</returns>
+        </member>
+        <member name="M:MimicryAPI.V1.Controllers.WordsController.Get(System.Int32)">
+            <summary>
+            Obter palavra por ID
+            </summary>
+            <param name="id">Identificador da palavra</param>
+            <returns>Objeto palavra</returns>
+        </member>
+        <member name="M:MimicryAPI.V1.Controllers.WordsController.Add(MimicryAPI.V1.Models.Word)">
+            <summary>
+            Cadastrar uma palavra
+            </summary>
+            <param name="word">Um objeto da palavra</param>
+            <returns>Objeto palavra</returns>
+        </member>
+        <member name="M:MimicryAPI.V1.Controllers.WordsController.Update(System.Int32,MimicryAPI.V1.Models.Word)">
+            <summary>
+            Atualizar palavra
+            </summary>
+            <param name="id">Identificador da palavra</param>
+            <param name="word">Objeto da palavra</param>
+            <returns></returns>
+        </member>
+        <member name="M:MimicryAPI.V1.Controllers.WordsController.Delete(System.Int32)">
+            <summary>
+            Desativar palavra
+            </summary>
+            <param name="id">Identificador da palavra</param>
+            <returns></returns>
+        </member>
+        <member name="M:MimicryAPI.V2.Controllers.WordsController.Get">
+            <summary>
+            Obter todas as palavras.
+            </summary>
+            <returns>Listagem de palavras</returns>
+        </member>
+    </members>
+</doc>
