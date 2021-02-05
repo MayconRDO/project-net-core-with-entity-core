@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MimicryAPI.Helpers;
 using MimicryAPI.Models;
+using MimicryAPI.Models.DTO;
 using MimicryAPI.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MimicryAPI.Controllers
@@ -13,29 +16,72 @@ namespace MimicryAPI.Controllers
     public class WordsController : ControllerBase
     {
         private readonly IWordRepository _repository;
-        public WordsController(IWordRepository repository)
+        private readonly IMapper _mapper;
+
+        public WordsController(IWordRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
-        [Route("")]
-        [HttpGet]
-        public ActionResult Get([FromQuery]WordUrlQuery wordUrlQuery)
+        [HttpGet("", Name = "GetAll")]
+        public ActionResult Get([FromQuery]WordUrlQuery query)
         {
-            var words = _repository.Get(wordUrlQuery);
+            var words = _repository.Get(query);
 
-            if (wordUrlQuery.PageNumber.Value > words.Pagination.TotalPages)
+            if (words.Results.Count == 0)
             {
-                return NotFound();
+                NotFound();
             }
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(words.Pagination));
+            PaginationList<WordDTO> wordsDto = CreateLinksWord(query, words);
 
-            return Ok(words);
+            return Ok(wordsDto);
         }
 
-        [Route("{id}")]
-        [HttpGet]
+        private PaginationList<WordDTO> CreateLinksWord(WordUrlQuery query, PaginationList<Word> words)
+        {
+            var wordsDto = _mapper.Map<PaginationList<Word>, PaginationList<WordDTO>>(words);
+
+            foreach (var word in wordsDto.Results)
+            {
+                word.Links = new List<LinkDTO>();
+                word.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = word.Id }), "GET"));
+            }
+
+            wordsDto.Links.Add(new LinkDTO("self", Url.Link("GetAll", query), "GET"));
+
+            if (words.Pagination != null)
+            {
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(words.Pagination));
+
+                if (query.PageNumber + 1 <= words.Pagination.TotalPages)
+                {
+                    var queryString = new WordUrlQuery()
+                    {
+                        PageNumber = query.PageNumber + 1,
+                        RecordPerPage = query.RecordPerPage,
+                        Date = query.Date
+                    };
+                    wordsDto.Links.Add(new LinkDTO("next", Url.Link("GetAll", queryString), "GET"));
+                }
+
+                if (query.PageNumber - 1 > 0)
+                {
+                    var queryString = new WordUrlQuery()
+                    {
+                        PageNumber = query.PageNumber - 1,
+                        RecordPerPage = query.RecordPerPage,
+                        Date = query.Date
+                    };
+                    wordsDto.Links.Add(new LinkDTO("prev", Url.Link("GetAll", queryString), "GET"));
+                }
+            }
+
+            return wordsDto;
+        }
+
+        [HttpGet("{id}", Name = "Get")]
         public ActionResult Get(int id)
         {
             var word = _repository.Get(id);
@@ -45,7 +91,13 @@ namespace MimicryAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(word);
+            WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
+            wordDTO.Links = new List<LinkDTO>();
+            wordDTO.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = wordDTO.Id }), "GET"));
+            wordDTO.Links.Add(new LinkDTO("update", Url.Link("Update", new { id = wordDTO.Id }), "PUT"));
+            wordDTO.Links.Add(new LinkDTO("delete", Url.Link("Delete", new { id = wordDTO.Id }), "DELETE"));
+
+            return Ok(wordDTO);
         }
 
         [Route("")]
@@ -58,8 +110,7 @@ namespace MimicryAPI.Controllers
             return Created($"/api/words/{word.Id}", word);
         }
 
-        [Route("{id}")]
-        [HttpPut]
+        [HttpPut("{id}", Name = "Update")]
         public ActionResult Update(int id, [FromBody]Word word)
         {
             var obj = _repository.Get(id);
@@ -76,8 +127,7 @@ namespace MimicryAPI.Controllers
             return Ok();
         }
 
-        [Route("{id}")]
-        [HttpDelete]
+        [HttpDelete("{id}", Name = "Delete")]
         public ActionResult Delete(int id)
         {
             var word = _repository.Get(id);

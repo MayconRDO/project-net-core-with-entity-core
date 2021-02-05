@@ -44,7 +44,7 @@ namespace MimicryAPI.Repositories
                 paginationList.Pagination = pagination;
             }
 
-            paginationList.AddRange(words.ToList());
+            paginationList.Results.AddRange(words.ToList());
 
             return paginationList;
         }
