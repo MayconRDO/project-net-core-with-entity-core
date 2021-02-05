@@ -1,8 +1,7 @@
 ﻿using MimicryAPI.Helpers;
-using MimicryAPI.Models;
-using System.Collections.Generic;
+using MimicryAPI.V1.Models;
 
-namespace MimicryAPI.Repositories.Interfaces
+namespace MimicryAPI.V1.Repositories.Interfaces
 {
     public interface IWordRepository
     {

@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MimicryAPI.Helpers;
-using MimicryAPI.Models;
-using MimicryAPI.Models.DTO;
-using MimicryAPI.Repositories.Interfaces;
+using MimicryAPI.V1.Models;
+using MimicryAPI.V1.Models.DTO;
+using MimicryAPI.V1.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MimicryAPI.Controllers
+namespace MimicryAPI.V1.Controllers
 {
-    [Route("api/words")]
+    [ApiController]
+    //[Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/[controller]")]
+    [ApiVersion("1.0", Deprecated = true)]
+    [ApiVersion("1.1")]
     public class WordsController : ControllerBase
     {
         private readonly IWordRepository _repository;
@@ -24,6 +25,8 @@ namespace MimicryAPI.Controllers
             _mapper = mapper;
         }
 
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("1.1")]
         [HttpGet("", Name = "GetAll")]
         public ActionResult Get([FromQuery]WordUrlQuery query)
         {
@@ -45,7 +48,7 @@ namespace MimicryAPI.Controllers
 
             foreach (var word in wordsDto.Results)
             {
-                word.Links = new List<LinkDTO>();
+                //word.Links = new List<LinkDTO>();
                 word.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = word.Id }), "GET"));
             }
 
@@ -81,6 +84,8 @@ namespace MimicryAPI.Controllers
             return wordsDto;
         }
 
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("1.1")]
         [HttpGet("{id}", Name = "Get")]
         public ActionResult Get(int id)
         {
@@ -92,7 +97,7 @@ namespace MimicryAPI.Controllers
             }
 
             WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
-            wordDTO.Links = new List<LinkDTO>();
+            //wordDTO.Links = new List<LinkDTO>();
             wordDTO.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = wordDTO.Id }), "GET"));
             wordDTO.Links.Add(new LinkDTO("update", Url.Link("Update", new { id = wordDTO.Id }), "PUT"));
             wordDTO.Links.Add(new LinkDTO("delete", Url.Link("Delete", new { id = wordDTO.Id }), "DELETE"));
@@ -100,16 +105,33 @@ namespace MimicryAPI.Controllers
             return Ok(wordDTO);
         }
 
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("1.1")]
         [Route("")]
         [HttpPost]
         public ActionResult Add([FromBody]Word word)
         {
+            if (word == null)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             word.CreationDate = DateTime.Now;
             _repository.Add(word);
 
-            return Created($"/api/words/{word.Id}", word);
+            var wordDTO = _mapper.Map<Word, WordDTO>(word);
+
+            wordDTO.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = wordDTO.Id }), "GET"));
+
+            return Created($"/api/words/{wordDTO.Id}", wordDTO);
         }
 
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("1.1")]
         [HttpPut("{id}", Name = "Update")]
         public ActionResult Update(int id, [FromBody]Word word)
         {
@@ -120,13 +142,29 @@ namespace MimicryAPI.Controllers
                 return NotFound();
             }
 
+            if (word == null)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             word.Id = id;
             word.ModifiedDate = DateTime.Now;
+            word.CreationDate = obj.CreationDate;
+
             _repository.Update(word);
+
+            var wordDTO = _mapper.Map<Word, WordDTO>(word);
+
+            wordDTO.Links.Add(new LinkDTO("self", Url.Link("Get", new { id = wordDTO.Id }), "GET"));
 
             return Ok();
         }
 
+        [MapToApiVersion("1.1")]
         [HttpDelete("{id}", Name = "Delete")]
         public ActionResult Delete(int id)
         {

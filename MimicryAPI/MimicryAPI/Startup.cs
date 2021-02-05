@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MimicryAPI.DataBase;
 using MimicryAPI.Helpers;
-using MimicryAPI.Repositories;
-using MimicryAPI.Repositories.Interfaces;
+using MimicryAPI.V1.Repositories;
+using MimicryAPI.V1.Repositories.Interfaces;
 
 namespace MimicryAPI
 {
@@ -31,8 +33,16 @@ namespace MimicryAPI
             {
                 opt.UseSqlite("Data Source=DataBase\\Mimicry.db");
             });
-
             services.AddScoped<IWordRepository, WordRepository>();
+            services.AddApiVersioning(conf =>
+            {
+                conf.ReportApiVersions = true;
+
+                conf.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                conf.AssumeDefaultVersionWhenUnspecified = true;
+                conf.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

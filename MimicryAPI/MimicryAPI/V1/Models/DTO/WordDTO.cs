@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MimicryAPI.Models.DTO
+namespace MimicryAPI.V1.Models.DTO
 {
     public class WordDTO : BaseDTO
     {

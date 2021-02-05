@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MimicryAPI.Models;
-using MimicryAPI.Models.DTO;
+using MimicryAPI.V1.Models;
+using MimicryAPI.V1.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

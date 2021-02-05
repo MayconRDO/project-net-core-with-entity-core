@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MimicryAPI.DataBase;
 using MimicryAPI.Helpers;
-using MimicryAPI.Models;
-using MimicryAPI.Repositories.Interfaces;
+using MimicryAPI.V1.Models;
+using MimicryAPI.V1.Repositories.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-namespace MimicryAPI.Repositories
+namespace MimicryAPI.V1.Repositories
 {
     public class WordRepository : IWordRepository
     {

@@ -1,4 +1,4 @@
-﻿using MimicryAPI.Models.DTO;
+﻿using MimicryAPI.V1.Models.DTO;
 using System.Collections.Generic;
 
 namespace MimicryAPI.Helpers
