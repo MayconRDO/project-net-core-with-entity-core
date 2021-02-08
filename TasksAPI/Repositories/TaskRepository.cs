@@ -30,14 +30,13 @@ namespace TasksAPI.Repositories
 
         public List<Task> Sync(List<Task> tasks)
         {
-            var newTasks = tasks.Where(t => t.Id == 0);
+            var newTasks = tasks.Where(t => t.Id == 0).ToList();
+            var updateTasks = tasks.Where(t => t.Id != 0).ToList();
 
             foreach (var task in tasks)
             {
                 _context.Add(task);
-            }
-
-            var updateTasks = tasks.Where(t => t.Id != 0);
+            }            
 
             foreach (var task in updateTasks)
             {

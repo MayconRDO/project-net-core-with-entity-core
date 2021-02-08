@@ -26,7 +26,7 @@ namespace TasksAPI.Controllers
             _userManager = userManager;
         }
 
-
+        [HttpPost("login")]
         public ActionResult Login([FromBody]UserDTO user)
         {
             ModelState.Remove("PasswordConfirmation");
@@ -53,6 +53,7 @@ namespace TasksAPI.Controllers
             }
         }
 
+        [HttpPost("")]
         public ActionResult Add([FromBody]UserDTO user)
         {
             if (ModelState.IsValid)
@@ -60,7 +61,8 @@ namespace TasksAPI.Controllers
                 ApplicationUser applicationUser = new ApplicationUser()
                 {
                     FullName = user.Name,
-                    Email = user.Email
+                    Email = user.Email,
+                    UserName = user.Email
                 };
 
                 var result = _userManager.CreateAsync(applicationUser, user.Password).Result;
