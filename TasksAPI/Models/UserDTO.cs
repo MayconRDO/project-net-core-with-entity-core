@@ -13,6 +13,6 @@ namespace TasksAPI.Models
         public string Password { get; set; }
         [Required]
         [Compare("Password")]
-        public int PasswordConfirmation { get; set; }
+        public string PasswordConfirmation { get; set; }
     }
 }

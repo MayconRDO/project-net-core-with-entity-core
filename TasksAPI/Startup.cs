@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TasksAPI.DataBase;
+using TasksAPI.Repositories;
+using TasksAPI.Repositories.Interfaces;
 
 namespace TasksAPI
 {
@@ -33,6 +35,9 @@ namespace TasksAPI
             {
                 op.UseSqlite("Data Source=Database\\Tasks.db");
             });
+
+            services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
