@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using TasksAPI.Models;
 using TasksAPI.Repositories.Interfaces;
 
@@ -38,9 +38,10 @@ namespace TasksAPI.Controllers
 
                 if (applicationUser != null)
                 {
-                    _signInManager.SignInAsync(applicationUser, false);
+                    // Migrado a utilização de cookie para usar jwt
+                    //_signInManager.SignInAsync(applicationUser, false);
 
-                    return Ok();
+                    return Ok(BuildToken(applicationUser));
                 }
                 else
                 {
@@ -88,5 +89,29 @@ namespace TasksAPI.Controllers
                 return UnprocessableEntity(ModelState);
             }
         }
+
+        public object BuildToken(ApplicationUser user)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-tasks"));
+            var sign = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var exp = DateTime.UtcNow.AddHours(1);
+
+            JwtSecurityToken token = new JwtSecurityToken(issuer: null,
+                                                          audience: null,
+                                                          claims: claims,
+                                                          expires: exp,
+                                                          signingCredentials: sign);
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new { token = tokenString, expiration = exp };
+        }
+
     }
 }
