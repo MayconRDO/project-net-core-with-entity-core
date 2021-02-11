@@ -44,6 +44,7 @@ namespace TasksAPI
 
             services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<TasksContext>()

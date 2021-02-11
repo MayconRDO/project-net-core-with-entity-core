@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TasksAPI.Migrations
 {
-    public partial class BaseInit : Migration
+    public partial class DataBaseInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -159,12 +159,14 @@ namespace TasksAPI.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    IdApp = table.Column<int>(nullable: false),
                     Title = table.Column<string>(nullable: true),
                     DateHour = table.Column<DateTime>(nullable: false),
                     Local = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Type = table.Column<string>(nullable: true),
                     Completed = table.Column<bool>(nullable: false),
+                    Exclude = table.Column<bool>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     DateModifield = table.Column<DateTime>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
@@ -174,6 +176,31 @@ namespace TasksAPI.Migrations
                     table.PrimaryKey("PK_Tasks", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Tasks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RefreshToken = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true),
+                    Used = table.Column<bool>(nullable: false),
+                    ExpirationToken = table.Column<DateTime>(nullable: false),
+                    ExpirationRefreshToken = table.Column<DateTime>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateModifield = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -221,6 +248,11 @@ namespace TasksAPI.Migrations
                 name: "IX_Tasks_UserId",
                 table: "Tasks",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tokens_UserId",
+                table: "Tokens",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -242,6 +274,9 @@ namespace TasksAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tasks");
+
+            migrationBuilder.DropTable(
+                name: "Tokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

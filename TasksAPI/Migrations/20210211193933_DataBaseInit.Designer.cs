@@ -9,8 +9,8 @@ using TasksAPI.DataBase;
 namespace TasksAPI.Migrations
 {
     [DbContext(typeof(TasksContext))]
-    [Migration("20210208121232_TaskSync")]
-    partial class TaskSync
+    [Migration("20210211193933_DataBaseInit")]
+    partial class DataBaseInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -211,6 +211,32 @@ namespace TasksAPI.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("TasksAPI.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime?>("DateModifield");
+
+                    b.Property<DateTime>("ExpirationRefreshToken");
+
+                    b.Property<DateTime>("ExpirationToken");
+
+                    b.Property<string>("RefreshToken");
+
+                    b.Property<bool>("Used");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -260,6 +286,13 @@ namespace TasksAPI.Migrations
                 {
                     b.HasOne("TasksAPI.Models.ApplicationUser", "User")
                         .WithMany("Tasks")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("TasksAPI.Models.Token", b =>
+                {
+                    b.HasOne("TasksAPI.Models.ApplicationUser", "User")
+                        .WithMany("Tokens")
                         .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618

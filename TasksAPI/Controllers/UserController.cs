@@ -16,14 +16,19 @@ namespace TasksAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IApplicationUserRepository _userRepository;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITokenRepository _tokenRepository;
 
-        public UserController(IApplicationUserRepository userRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public UserController(IApplicationUserRepository userRepository,
+                             SignInManager<ApplicationUser> signInManager,
+                             UserManager<ApplicationUser> userManager,
+                             ITokenRepository tokenRepository)
         {
             _userRepository = userRepository;
-            _signInManager = signInManager;
+            //_signInManager = signInManager;
             _userManager = userManager;
+            _tokenRepository = tokenRepository;
         }
 
         [HttpPost("login")]
@@ -39,9 +44,9 @@ namespace TasksAPI.Controllers
                 if (applicationUser != null)
                 {
                     // Migrado a utilização de cookie para usar jwt
-                    //_signInManager.SignInAsync(applicationUser, false);
+                    //_signInManager.SignInAsync(applicationUser, false);                    
 
-                    return Ok(BuildToken(applicationUser));
+                    return Ok(GenerateToken(applicationUser));
                 }
                 else
                 {
@@ -52,6 +57,27 @@ namespace TasksAPI.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        [HttpPost("renew")]
+        public ActionResult Renew([FromBody]TokenDTO tokenDTO)
+        {
+            var refreshTonken = _tokenRepository.Get(tokenDTO.RefreshToken);
+
+            if (refreshTonken == null)
+            {
+                return NotFound();
+            }
+
+            refreshTonken.DateModifield = DateTime.Now;
+            refreshTonken.Used = true;
+
+            _tokenRepository.Update(refreshTonken);
+
+            var applicationUser = _userRepository.Get(refreshTonken.UserId);
+
+            return GenerateToken(applicationUser);
+
         }
 
         [HttpPost("")]
@@ -90,7 +116,7 @@ namespace TasksAPI.Controllers
             }
         }
 
-        public object BuildToken(ApplicationUser user)
+        public TokenDTO BuildToken(ApplicationUser user)
         {
             var claims = new[]
             {
@@ -110,7 +136,37 @@ namespace TasksAPI.Controllers
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return new { token = tokenString, expiration = exp };
+            var refreshToken = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var expRefreshToken = DateTime.UtcNow.AddHours(2);
+
+            var tokenDTO = new TokenDTO
+            {
+                Token = tokenString,
+                Expiration = exp,
+                ExpirationRefreshToken = expRefreshToken,
+                RefreshToken = refreshToken
+            };
+
+            return tokenDTO;
+        }
+
+        private ActionResult GenerateToken(ApplicationUser applicationUser)
+        {
+            var token = BuildToken(applicationUser);
+
+            var newToken = new Token()
+            {
+                RefreshToken = token.RefreshToken,
+                ExpirationToken = token.Expiration,
+                ExpirationRefreshToken = token.ExpirationRefreshToken,
+                User = applicationUser,
+                DateCreated = DateTime.Now,
+                Used = false
+            };
+
+            _tokenRepository.Add(newToken);
+
+            return Ok(token);
         }
 
     }

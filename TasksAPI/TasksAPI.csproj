@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20210208121232_TaskSync.cs" />
+    <Compile Remove="Migrations\20210208121232_TaskSync.Designer.cs" />
+    <Compile Remove="Migrations\20210211182257_DataBaseInit.cs" />
+    <Compile Remove="Migrations\20210211182257_DataBaseInit.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
