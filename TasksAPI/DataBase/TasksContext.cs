@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TasksAPI.Models;
+using TasksAPI.API.Models;
 
 namespace TasksAPI.DataBase
 {

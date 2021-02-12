@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TasksAPI.DataBase;
-using TasksAPI.Models;
-using TasksAPI.Repositories.Interfaces;
+using TasksAPI.API.Models;
+using TasksAPI.API.Repositories.Interfaces;
 
-namespace TasksAPI.Repositories
+namespace TasksAPI.API.Repositories
 {
     public class TokenRepository : ITokenRepository
     {

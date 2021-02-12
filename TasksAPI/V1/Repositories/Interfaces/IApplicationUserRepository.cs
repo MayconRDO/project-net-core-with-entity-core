@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TasksAPI.Models;
+using TasksAPI.API.Models;
 
-namespace TasksAPI.Repositories.Interfaces
+namespace TasksAPI.API.Repositories.Interfaces
 {
     public interface IApplicationUserRepository
     {

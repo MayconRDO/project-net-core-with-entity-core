@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TasksAPI.Models
+namespace TasksAPI.API.Models
 {
     public class TokenDTO
     {

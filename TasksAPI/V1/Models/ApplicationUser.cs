@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TasksAPI.Models
+namespace TasksAPI.API.Models
 {
     public class ApplicationUser : IdentityUser
     {

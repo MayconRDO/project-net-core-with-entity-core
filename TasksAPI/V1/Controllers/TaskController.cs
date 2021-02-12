@@ -4,14 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TasksAPI.Models;
-using TasksAPI.Repositories.Interfaces;
+using TasksAPI.API.Models;
+using TasksAPI.API.Repositories.Interfaces;
 
-namespace TasksAPI.Controllers
+namespace TasksAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [ApiVersion("1.0")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskRepository _taskRepository;
@@ -23,6 +24,11 @@ namespace TasksAPI.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Sincronizar tarefas
+        /// </summary>
+        /// <param name="tasks"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost("sync")]
         public ActionResult Sync([FromBody]List<Task> tasks)
@@ -30,6 +36,11 @@ namespace TasksAPI.Controllers
             return Ok(_taskRepository.Sync(tasks));
         }
 
+        /// <summary>
+        /// Restaurar tarefas
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("restor")]
         public ActionResult Restor(DateTime dateTime)
@@ -38,6 +49,10 @@ namespace TasksAPI.Controllers
             return Ok(_taskRepository.Restor(user, dateTime));
         }
 
+        /// <summary>
+        /// Visualizar modelo de tarefas
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("model")]
         public ActionResult Model()

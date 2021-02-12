@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using TasksAPI.Models;
+using TasksAPI.API.Models;
 
-namespace TasksAPI.Repositories.Interfaces
+namespace TasksAPI.API.Repositories.Interfaces
 {
     public interface ITaskRepository
     {

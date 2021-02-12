@@ -6,13 +6,14 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using TasksAPI.Models;
-using TasksAPI.Repositories.Interfaces;
+using TasksAPI.API.Models;
+using TasksAPI.API.Repositories.Interfaces;
 
-namespace TasksAPI.Controllers
+namespace TasksAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private readonly IApplicationUserRepository _userRepository;
@@ -31,6 +32,11 @@ namespace TasksAPI.Controllers
             _tokenRepository = tokenRepository;
         }
 
+        /// <summary>
+        /// Realizar login
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public ActionResult Login([FromBody]UserDTO user)
         {
@@ -59,6 +65,11 @@ namespace TasksAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Ronovar token
+        /// </summary>
+        /// <param name="tokenDTO"></param>
+        /// <returns></returns>
         [HttpPost("renew")]
         public ActionResult Renew([FromBody]TokenDTO tokenDTO)
         {
@@ -80,6 +91,11 @@ namespace TasksAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Adicionar usuário
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost("")]
         public ActionResult Add([FromBody]UserDTO user)
         {
@@ -116,7 +132,7 @@ namespace TasksAPI.Controllers
             }
         }
 
-        public TokenDTO BuildToken(ApplicationUser user)
+        private TokenDTO BuildToken(ApplicationUser user)
         {
             var claims = new[]
             {

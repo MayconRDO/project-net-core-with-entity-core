@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TasksAPI</name>
+    </assembly>
+    <members>
+        <member name="M:TasksAPI.API.Controllers.TaskController.Sync(System.Collections.Generic.List{TasksAPI.API.Models.Task})">
+            <summary>
+            Sincronizar tarefas
+            </summary>
+            <param name="tasks"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TasksAPI.API.Controllers.TaskController.Restor(System.DateTime)">
+            <summary>
+            Restaurar tarefas
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TasksAPI.API.Controllers.TaskController.Model">
+            <summary>
+            Visualizar modelo de tarefas
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TasksAPI.API.Controllers.UserController.Login(TasksAPI.API.Models.UserDTO)">
+            <summary>
+            Realizar login
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TasksAPI.API.Controllers.UserController.Renew(TasksAPI.API.Models.TokenDTO)">
+            <summary>
+            Ronovar token
+            </summary>
+            <param name="tokenDTO"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TasksAPI.API.Controllers.UserController.Add(TasksAPI.API.Models.UserDTO)">
+            <summary>
+            Adicionar usuário
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

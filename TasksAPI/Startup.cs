@@ -4,15 +4,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TasksAPI.DataBase;
-using TasksAPI.Models;
-using TasksAPI.Repositories;
-using TasksAPI.Repositories.Interfaces;
+using TasksAPI.API.Models;
+using TasksAPI.API.Repositories;
+using TasksAPI.API.Repositories.Interfaces;
+using System.Linq;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
+using TasksAPI.V1.Helpers.Swagger;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace TasksAPI
 {
@@ -33,9 +42,80 @@ namespace TasksAPI
                 op.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddMvc(/*conf =>
+            {
+                // Suporta formato XML
+                conf.ReturnHttpNotAcceptable = true;
+                conf.InputFormatters.Add(new XmlSerializerInputFormatter(conf));
+                conf.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+            }*/)
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            #region Versionamento
+
+            services.AddApiVersioning(conf =>
+            {
+                conf.ReportApiVersions = true;
+
+                //conf.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                conf.AssumeDefaultVersionWhenUnspecified = true;
+                conf.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+
+            #endregion
+
+            #region Swagger
+
+            services.AddSwaggerGen(conf =>
+            {
+                // campo bearer token
+                conf.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    In = "header",
+                    Type = "apiKey",
+                    Description = "Insira o Json Web Token (JWT) para se autenticar",
+                    Name = "Authorization"
+                });
+
+                var security = new Dictionary<string, IEnumerable<string>>()
+                {
+                    {"Bearer", new string[] {} }
+                };
+                conf.AddSecurityRequirement(security);
+
+                conf.ResolveConflictingActions(apiDescription => apiDescription.First());
+                conf.SwaggerDoc("v1.0", new Info()
+                {
+                    Title = "Tasks Api - V1.0",
+                    Version = "v1.0"
+                });
+
+                var projectPath = PlatformServices.Default.Application.ApplicationBasePath;
+                var projectName = $"{PlatformServices.Default.Application.ApplicationName}.xml";
+                var xmlFilePathComment = Path.Combine(projectPath, projectName);
+
+                conf.IncludeXmlComments(xmlFilePathComment);
+
+                conf.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    var actionApiVersionModel = apiDesc.ActionDescriptor?.GetApiVersion();
+                    // would mean this action is unversioned and should be included everywhere
+                    if (actionApiVersionModel == null)
+                    {
+                        return true;
+                    }
+                    if (actionApiVersionModel.DeclaredApiVersions.Any())
+                    {
+                        return actionApiVersionModel.DeclaredApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                    }
+                    return actionApiVersionModel.ImplementedApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                });
+
+                conf.OperationFilter<ApiVersionOperationFilter>();
+            });
+
+            #endregion
 
             services.AddDbContext<TasksContext>(op =>
             {
@@ -106,7 +186,12 @@ namespace TasksAPI
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
             app.UseMvc();
-            app.UseAuthentication();
+            app.UseSwagger();
+            app.UseSwaggerUI(conf =>
+            {
+                conf.SwaggerEndpoint("/swagger/v1.0/swagger.json", "Tasks Api - v1.0");
+                conf.RoutePrefix = string.Empty;
+            });
 
         }
     }
