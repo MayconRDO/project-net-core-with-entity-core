@@ -184,19 +184,17 @@ namespace TalkToAPI.Migrations
 
                     b.Property<DateTime>("CreateDate");
 
-                    b.Property<string>("FromId");
+                    b.Property<string>("FromId")
+                        .IsRequired();
 
-                    b.Property<string>("OwnerId");
-
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .IsRequired();
 
                     b.Property<string>("ToId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FromId");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ToId");
 
@@ -278,11 +276,8 @@ namespace TalkToAPI.Migrations
                 {
                     b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "From")
                         .WithMany()
-                        .HasForeignKey("FromId");
-
-                    b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "To")
                         .WithMany()

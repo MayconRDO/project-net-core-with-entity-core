@@ -9,7 +9,7 @@ using TalkToAPI.DataBase;
 namespace TalkToAPI.Migrations
 {
     [DbContext(typeof(TalkToContext))]
-    [Migration("20210223013640_DataBaseInit")]
+    [Migration("20210301200622_DataBaseInit")]
     partial class DataBaseInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,11 +186,11 @@ namespace TalkToAPI.Migrations
 
                     b.Property<DateTime>("CreateDate");
 
-                    b.Property<string>("FromId");
+                    b.Property<string>("FromId")
+                        .IsRequired();
 
-                    b.Property<string>("OwnerId");
-
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .IsRequired();
 
                     b.Property<string>("ToId");
 
@@ -198,11 +198,35 @@ namespace TalkToAPI.Migrations
 
                     b.HasIndex("FromId");
 
-                    b.HasIndex("OwnerId");
-
                     b.HasIndex("ToId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("TalkToAPI.V1.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime?>("DateModifield");
+
+                    b.Property<DateTime>("ExpirationRefreshToken");
+
+                    b.Property<DateTime>("ExpirationToken");
+
+                    b.Property<string>("RefreshToken");
+
+                    b.Property<bool>("Used");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -254,15 +278,19 @@ namespace TalkToAPI.Migrations
                 {
                     b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "From")
                         .WithMany()
-                        .HasForeignKey("FromId");
-
-                    b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "To")
                         .WithMany()
                         .HasForeignKey("ToId");
+                });
+
+            modelBuilder.Entity("TalkToAPI.V1.Models.Token", b =>
+                {
+                    b.HasOne("TalkToAPI.V1.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

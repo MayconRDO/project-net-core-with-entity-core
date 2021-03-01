@@ -32,5 +32,10 @@ namespace TalkToAPI.V1.Models.DTO
         [Required]
         [Compare("Password")]
         public string PasswordConfirmation { get; set; }
+
+        /// <summary>
+        /// Slogan
+        /// </summary>
+        public string Slogan { get; set; }
     }
 }

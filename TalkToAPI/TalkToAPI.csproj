@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Helpers\" />
-    <Folder Include="V1\Repositories\Contracts\" />
   </ItemGroup>
 
 </Project>

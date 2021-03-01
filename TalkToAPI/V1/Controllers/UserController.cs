@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,6 +13,9 @@ using TalkToAPI.V1.Repositories.Contracts;
 
 namespace TalkToAPI.V1.Controllers
 {
+    /// <summary>
+    /// Controle o objeto usuário
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -20,8 +24,14 @@ namespace TalkToAPI.V1.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenRepository _tokenRepository;
 
+        /// <summary>
+        /// Construtor
+        /// </summary>
+        /// <param name="userRepository">Repositório do Usuário</param>
+        /// <param name="signInManager">Login da classe UseManager</param>
+        /// <param name="userManager">Interface dos serviços da classe UserManager</param>
+        /// <param name="tokenRepository">Repositório do Token</param>
         public UserController(IApplicationUserRepository userRepository,
-                             SignInManager<ApplicationUser> signInManager,
                              UserManager<ApplicationUser> userManager,
                              ITokenRepository tokenRepository)
         {
@@ -65,6 +75,36 @@ namespace TalkToAPI.V1.Controllers
         }
 
         /// <summary>
+        /// Obter todos os usuários
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("")]
+        public ActionResult GetAll()
+        {
+            return Ok(_userManager.Users);
+        }
+
+        /// <summary>
+        /// Obter todos os usuário pelo ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("{id}")]
+        public ActionResult Get(string id)
+        {
+            var user = _userManager.FindByIdAsync(id).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+        /// <summary>
         /// Ronovar token
         /// </summary>
         /// <param name="tokenDTO"></param>
@@ -91,7 +131,7 @@ namespace TalkToAPI.V1.Controllers
         }
 
         /// <summary>
-        /// Adicionar usuário
+        /// Cadastrar usuário
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -131,6 +171,53 @@ namespace TalkToAPI.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Alterar usuário
+        /// </summary>
+        /// <param name="id">ID identificador do usuário</param>
+        /// <param name="user">DTO usuário</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("{id}")]
+        public ActionResult Update(string id, [FromBody] UserDTO user)
+        {
+            ApplicationUser applicationUser = _userManager.GetUserAsync(HttpContext.User).Result;
+
+            if (ModelState.IsValid)
+            {
+                applicationUser.FullName = user.Name;
+                applicationUser.Email = user.Email;
+                applicationUser.UserName = user.Email;
+                applicationUser.Slogan = user.Slogan;
+
+                var result = _userManager.UpdateAsync(applicationUser).Result;
+                _userManager.RemovePasswordAsync(applicationUser);
+                _userManager.AddPasswordAsync(applicationUser, user.Password);
+
+                if (!result.Succeeded)
+                {
+                    List<string> errors = new List<string>();
+
+                    foreach (var error in result.Errors)
+                    {
+                        errors.Add(error.Description);
+                    }
+
+                    return UnprocessableEntity(errors);
+                }
+                else
+                {
+                    return Ok(applicationUser);
+                }
+            }
+            else
+            {
+                return UnprocessableEntity(ModelState);
+            }
+        }
+
+        #region Métodos privados
+
         private TokenDTO BuildToken(ApplicationUser user)
         {
             var claims = new[]
@@ -139,7 +226,7 @@ namespace TalkToAPI.V1.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-tasks"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-talk-to"));
             var sign = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var exp = DateTime.UtcNow.AddHours(1);
 
@@ -183,5 +270,8 @@ namespace TalkToAPI.V1.Controllers
 
             return Ok(token);
         }
+
+        #endregion
+
     }
 }

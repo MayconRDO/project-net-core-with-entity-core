@@ -160,10 +160,9 @@ namespace TalkToAPI.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FromId = table.Column<string>(nullable: true),
+                    FromId = table.Column<string>(nullable: false),
                     ToId = table.Column<string>(nullable: true),
-                    OwnerId = table.Column<string>(nullable: true),
-                    Text = table.Column<string>(nullable: true),
+                    Text = table.Column<string>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -174,16 +173,35 @@ namespace TalkToAPI.Migrations
                         column: x => x.FromId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Messages_AspNetUsers_ToId",
                         column: x => x.ToId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RefreshToken = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true),
+                    Used = table.Column<bool>(nullable: false),
+                    ExpirationToken = table.Column<DateTime>(nullable: false),
+                    ExpirationRefreshToken = table.Column<DateTime>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateModifield = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -232,14 +250,14 @@ namespace TalkToAPI.Migrations
                 column: "FromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_OwnerId",
-                table: "Messages",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ToId",
                 table: "Messages",
                 column: "ToId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tokens_UserId",
+                table: "Tokens",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -261,6 +279,9 @@ namespace TalkToAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Tokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

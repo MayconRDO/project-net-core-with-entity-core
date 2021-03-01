@@ -64,11 +64,64 @@
             <param name="app">app</param>
             <param name="env">env</param>
         </member>
+        <member name="T:TalkToAPI.V1.Controllers.MessageController">
+            <summary>
+            Controlador do objeto Mensagem
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.MessageController.#ctor(TalkToAPI.V1.Repositories.Contracts.IMessageRepository)">
+            <summary>
+            Construtor
+            </summary>
+            <param name="messageRepository">Repositório mensagem</param>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.MessageController.GetAll(System.String,System.String)">
+            <summary>
+            Obter mensagem
+            </summary>
+            <param name="userFrom">Usuário remetente</param>
+            <param name="userTo">Usuário Destino</param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.MessageController.Add(TalkToAPI.V1.Models.Message)">
+            <summary>
+            Cadastro de mensagem
+            </summary>
+            <param name="message">Objeto mensagem</param>
+            <returns></returns>
+        </member>
+        <member name="T:TalkToAPI.V1.Controllers.UserController">
+            <summary>
+            Controle o objeto usuário
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.#ctor(TalkToAPI.V1.Repositories.Contracts.IApplicationUserRepository,Microsoft.AspNetCore.Identity.UserManager{TalkToAPI.V1.Models.ApplicationUser},TalkToAPI.V1.Repositories.Contracts.ITokenRepository)">
+            <summary>
+            Construtor
+            </summary>
+            <param name="userRepository">Repositório do Usuário</param>
+            <param name="signInManager">Login da classe UseManager</param>
+            <param name="userManager">Interface dos serviços da classe UserManager</param>
+            <param name="tokenRepository">Repositório do Token</param>
+        </member>
         <member name="M:TalkToAPI.V1.Controllers.UserController.Login(TalkToAPI.V1.Models.DTO.UserDTO)">
             <summary>
             Realizar login
             </summary>
             <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.GetAll">
+            <summary>
+            Obter todos os usuários
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.Get(System.String)">
+            <summary>
+            Obter todos os usuário pelo ID
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:TalkToAPI.V1.Controllers.UserController.Renew(TalkToAPI.V1.Models.DTO.TokenDTO)">
@@ -80,9 +133,17 @@
         </member>
         <member name="M:TalkToAPI.V1.Controllers.UserController.Add(TalkToAPI.V1.Models.DTO.UserDTO)">
             <summary>
-            Adicionar usuário
+            Cadastrar usuário
             </summary>
             <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.Update(System.String,TalkToAPI.V1.Models.DTO.UserDTO)">
+            <summary>
+            Alterar usuário
+            </summary>
+            <param name="id">ID identificador do usuário</param>
+            <param name="user">DTO usuário</param>
             <returns></returns>
         </member>
         <member name="T:TalkToAPI.V1.Models.ApplicationUser">
@@ -155,6 +216,11 @@
             Confirmação de senha
             </summary>
         </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.UserDTO.Slogan">
+            <summary>
+            Slogan
+            </summary>
+        </member>
         <member name="T:TalkToAPI.V1.Models.Message">
             <summary>
             Classe do objeto Mensagem
@@ -185,11 +251,6 @@
             Identificador do destinatário
             </summary>
         </member>
-        <member name="P:TalkToAPI.V1.Models.Message.Owner">
-            <summary>
-            Proprietário da mensagem
-            </summary>
-        </member>
         <member name="P:TalkToAPI.V1.Models.Message.Text">
             <summary>
             Texto da mensagem
@@ -199,6 +260,50 @@
             <summary>
             Data de criação
             </summary>
+        </member>
+        <member name="T:TalkToAPI.V1.Repositories.Contracts.IMessageRepository">
+            <summary>
+            Interface do objeto Mensagem
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.V1.Repositories.Contracts.IMessageRepository.GetAll(System.String,System.String)">
+            <summary>
+            Obter todas as mensagens
+            </summary>
+            <param name="userFrom">Usuário remetente</param>
+            <param name="userTo">Usuário destino</param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Repositories.Contracts.IMessageRepository.Add(TalkToAPI.V1.Models.Message)">
+            <summary>
+            Cadastro de mensagem
+            </summary>
+            <param name="message">Objeto Mensagem</param>
+        </member>
+        <member name="T:TalkToAPI.V1.Repositories.MessageRepository">
+            <summary>
+            Repositório do objeto mensagem
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.V1.Repositories.MessageRepository.#ctor(TalkToAPI.DataBase.TalkToContext)">
+            <summary>
+            Construtor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TalkToAPI.V1.Repositories.MessageRepository.GetAll(System.String,System.String)">
+            <summary>
+            Obter usuário
+            </summary>
+            <param name="userFrom">Usuário remetente</param>
+            <param name="userTo">Usuário destino</param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Repositories.MessageRepository.Add(TalkToAPI.V1.Models.Message)">
+            <summary>
+            Cadastrar usuário
+            </summary>
+            <param name="message"></param>
         </member>
     </members>
 </doc>

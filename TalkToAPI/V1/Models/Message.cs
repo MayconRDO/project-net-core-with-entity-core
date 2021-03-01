@@ -24,6 +24,7 @@ namespace TalkToAPI.V1.Models
         /// <summary>
         /// Identificador do remetente
         /// </summary>
+        [Required]
         public string FromId { get; set; }
 
         /// <summary>
@@ -36,16 +37,11 @@ namespace TalkToAPI.V1.Models
         /// Identificador do destinatário
         /// </summary>
         public string ToId { get; set; }
-
-        /// <summary>
-        /// Proprietário da mensagem
-        /// </summary>
-
-        public ApplicationUser Owner { get; set; }
-
+                
         /// <summary>
         /// Texto da mensagem
         /// </summary>
+        [Required]
         public string Text { get; set; }
 
         /// <summary>

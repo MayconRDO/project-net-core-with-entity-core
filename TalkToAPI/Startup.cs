@@ -66,14 +66,6 @@ namespace TalkToAPI
                 op.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
-            services.AddScoped<ITokenRepository, TokenRepository>();
-
-            services.AddDbContext<TalkToContext>(conf =>
-            {
-                conf.UseSqlite("Data Source=Database\\TalkTo.db");
-            });
-
             services.AddMvc(conf =>
             {
                 // Suporta formato XML
@@ -83,6 +75,18 @@ namespace TalkToAPI
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<TalkToContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddDbContext<TalkToContext>(conf =>
+            {
+                conf.UseSqlite("Data Source=Database\\TalkTo.db");
+            });
 
             #region Versionamento
 
@@ -98,9 +102,9 @@ namespace TalkToAPI
             #endregion
 
             #region Swagger
-
             services.AddSwaggerGen(conf =>
             {
+                // Geração de Token
                 // campo bearer token
                 conf.AddSecurityDefinition("Bearer", new ApiKeyScheme()
                 {
@@ -116,42 +120,21 @@ namespace TalkToAPI
                 };
                 conf.AddSecurityRequirement(security);
 
-                conf.ResolveConflictingActions(apiDescription => apiDescription.First());
-                conf.SwaggerDoc("v1.0", new Info()
+                // Versionamento futuro
+                conf.SwaggerDoc("v1", new Info()
                 {
-                    Title = "Fale comigo Api - V1.0",
-                    Version = "v1.0"
+                    Title = "API - Fale comigo",
+                    Version = "v1"
                 });
 
+                // Configuração para exibir comentários
                 var projectPath = PlatformServices.Default.Application.ApplicationBasePath;
                 var projectName = $"{PlatformServices.Default.Application.ApplicationName}.xml";
                 var xmlFilePathComment = Path.Combine(projectPath, projectName);
 
                 conf.IncludeXmlComments(xmlFilePathComment);
-
-                conf.DocInclusionPredicate((docName, apiDesc) =>
-                {
-                    var actionApiVersionModel = apiDesc.ActionDescriptor?.GetApiVersion();
-                    // would mean this action is unversioned and should be included everywhere
-                    if (actionApiVersionModel == null)
-                    {
-                        return true;
-                    }
-                    if (actionApiVersionModel.DeclaredApiVersions.Any())
-                    {
-                        return actionApiVersionModel.DeclaredApiVersions.Any(v => $"v{v.ToString()}" == docName);
-                    }
-                    return actionApiVersionModel.ImplementedApiVersions.Any(v => $"v{v.ToString()}" == docName);
-                });
-
-                conf.OperationFilter<ApiVersionOperationFilter>();
             });
-
             #endregion
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<TalkToContext>()
-                    .AddDefaultTokenProviders();
 
             #region JwtToken
 
@@ -182,15 +165,6 @@ namespace TalkToAPI
 
             #endregion
 
-            services.ConfigureApplicationCookie(opt =>
-            {
-                opt.Events.OnRedirectToLogin = context =>
-                {
-                    context.Response.StatusCode = 401;
-                    return System.Threading.Tasks.Task.CompletedTask;
-                };
-            });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -212,14 +186,13 @@ namespace TalkToAPI
             }
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
             app.UseStatusCodePages();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(conf =>
             {
-                conf.SwaggerEndpoint("/swagger/v1.0/swagger.json", "Fale comigo Api - v1.0");
-                conf.RoutePrefix = string.Empty;
+                conf.SwaggerEndpoint("/swagger/v1/swagger.json", "API - Fale comigo");
+                conf.RoutePrefix = "swagger";
             });
         }
     }
