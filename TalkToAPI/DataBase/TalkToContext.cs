@@ -22,7 +22,15 @@ namespace TalkToAPI.DataBase
 
         }
 
+        /// <summary>
+        /// Tabela de Mensagem
+        /// </summary>
         public DbSet<Message> Messages { get; set; }
+
+        /// <summary>
+        /// Tabela de Token
+        /// </summary>
+        public DbSet<Token> Tokens { get; set; }
 
     }
 }

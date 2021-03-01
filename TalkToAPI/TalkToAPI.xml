@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TalkToAPI</name>
+    </assembly>
+    <members>
+        <member name="T:TalkToAPI.DataBase.TalkToContext">
+            <summary>
+            Classe de contexto
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.DataBase.TalkToContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{TalkToAPI.DataBase.TalkToContext})">
+            <summary>
+            Construtor
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="P:TalkToAPI.DataBase.TalkToContext.Messages">
+            <summary>
+            Tabela de Mensagem
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.DataBase.TalkToContext.Tokens">
+            <summary>
+            Tabela de Token
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.Helpers.DTOMapperProfile">
+            <summary>
+            Classe de configuração AutoMapper
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.Helpers.DTOMapperProfile.#ctor">
+            <summary>
+            Construtor
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.Startup">
+            <summary>
+            Classe de configuração
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Construtor
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:TalkToAPI.Startup.Configuration">
+            <summary>
+            Configuração
+            </summary>
+        </member>
+        <member name="M:TalkToAPI.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configuração inicial
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:TalkToAPI.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            Configuração inicial
+            </summary>
+            <param name="app">app</param>
+            <param name="env">env</param>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.Login(TalkToAPI.V1.Models.DTO.UserDTO)">
+            <summary>
+            Realizar login
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.Renew(TalkToAPI.V1.Models.DTO.TokenDTO)">
+            <summary>
+            Ronovar token
+            </summary>
+            <param name="tokenDTO"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TalkToAPI.V1.Controllers.UserController.Add(TalkToAPI.V1.Models.DTO.UserDTO)">
+            <summary>
+            Adicionar usuário
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TalkToAPI.V1.Models.ApplicationUser">
+            <summary>
+            Classe do objeto de usário da aplicação
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.ApplicationUser.FullName">
+            <summary>
+            Nome completo
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.ApplicationUser.Slogan">
+            <summary>
+            Slogan
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.V1.Models.DTO.TokenDTO">
+            <summary>
+            Classe o objeto token
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.TokenDTO.Token">
+            <summary>
+            Token
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.TokenDTO.Expiration">
+            <summary>
+            Data de expiração do token
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.TokenDTO.RefreshToken">
+            <summary>
+            Token de expiração
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.TokenDTO.ExpirationRefreshToken">
+            <summary>
+            Data de expiração do token renovado
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.TokenDTO.Slogan">
+            <summary>
+            Slogan
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.V1.Models.DTO.UserDTO">
+            <summary>
+            Classe DTO do usuário
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.UserDTO.Name">
+            <summary>
+            Nome
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.UserDTO.Email">
+            <summary>
+            Email
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.UserDTO.Password">
+            <summary>
+            Senha
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.UserDTO.PasswordConfirmation">
+            <summary>
+            Confirmação de senha
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.V1.Models.Message">
+            <summary>
+            Classe do objeto Mensagem
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.Id">
+            <summary>
+            Identificador do objeto
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.From">
+            <summary>
+            Usuário remetente
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.FromId">
+            <summary>
+            Identificador do remetente
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.To">
+            <summary>
+            Usuário destion
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.ToId">
+            <summary>
+            Identificador do destinatário
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.Owner">
+            <summary>
+            Proprietário da mensagem
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.Text">
+            <summary>
+            Texto da mensagem
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.Message.CreateDate">
+            <summary>
+            Data de criação
+            </summary>
+        </member>
+    </members>
+</doc>
