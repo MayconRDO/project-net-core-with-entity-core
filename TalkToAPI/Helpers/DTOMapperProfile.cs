@@ -16,7 +16,9 @@ namespace TalkToAPI.Helpers
         public DTOMapperProfile()
         {
             CreateMap<ApplicationUser, UserDTO>()
-                .ForMember(dest => dest.Name, orig => orig.MapFrom(src => src.FullName));            
+                .ForMember(dest => dest.Name, orig => orig.MapFrom(src => src.FullName));
+
+            CreateMap<Message, MessageDTO>();
         }
     }
 }

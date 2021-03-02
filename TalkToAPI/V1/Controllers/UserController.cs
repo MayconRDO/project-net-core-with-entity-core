@@ -83,7 +83,7 @@ namespace TalkToAPI.V1.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("")]
+        [HttpGet("", Name = "GetAll")]
         public ActionResult GetAll()
         {
             var users = _userManager.Users.ToList();
@@ -92,10 +92,13 @@ namespace TalkToAPI.V1.Controllers
 
             foreach (var userDTO in usersDTO)
             {
-                userDTO.Links.Add(new LinkDTO("_self", Url.Link("Get", new { id = userDTO.Id}), "GET"));
+                userDTO.Links.Add(new LinkDTO("_self", Url.Link("Get", new { id = userDTO.Id }), "GET"));
             }
 
-            return Ok(usersDTO);
+            var list = new ListDTO<UserDTO>() { List = usersDTO };
+            list.Links.Add(new LinkDTO("_self", Url.Link("GetAll", null), "GET"));
+
+            return Ok(list);
         }
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace TalkToAPI.V1.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}", Name = "UserGet")]
         public ActionResult Get(string id)
         {
             var user = _userManager.FindByIdAsync(id).Result;
@@ -115,7 +118,7 @@ namespace TalkToAPI.V1.Controllers
             }
 
             var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
-            userDTO.Links.Add(new LinkDTO("_self", Url.Link("Get", new { id = userDTO.Id }), "GET"));
+            userDTO.Links.Add(new LinkDTO("_self", Url.Link("UserGet", new { id = userDTO.Id }), "GET"));
             userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
 
             return Ok(userDTO);
@@ -152,7 +155,7 @@ namespace TalkToAPI.V1.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        [HttpPost("", Name = "Add")]
+        [HttpPost("", Name = "UserAdd")]
         public ActionResult Add([FromBody] UserDTO user)
         {
             if (ModelState.IsValid)
@@ -180,8 +183,8 @@ namespace TalkToAPI.V1.Controllers
                 else
                 {
                     var userDTO = _mapper.Map<ApplicationUser, UserDTO>(applicationUser);
-                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("Add", new { id = userDTO.Id }), "POST"));
-                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("Get", new { id = userDTO.Id }), "GET"));
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("UserAdd", new { id = userDTO.Id }), "POST"));
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("UserGet", new { id = userDTO.Id }), "GET"));
                     userDTO.Links.Add(new LinkDTO("_atualizar", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
 
                     return Ok(userDTO);
@@ -231,9 +234,9 @@ namespace TalkToAPI.V1.Controllers
                 {
                     var userDTO = _mapper.Map<ApplicationUser, UserDTO>(applicationUser);
                     userDTO.Links.Add(new LinkDTO("_self", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
-                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("Get", new { id = userDTO.Id }), "GET"));
-                    
-                    return Ok(userDTO);                    
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("UserGet", new { id = userDTO.Id }), "GET"));
+
+                    return Ok(userDTO);
                 }
             }
             else

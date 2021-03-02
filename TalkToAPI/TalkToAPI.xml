@@ -69,11 +69,12 @@
             Controlador do objeto Mensagem
             </summary>
         </member>
-        <member name="M:TalkToAPI.V1.Controllers.MessageController.#ctor(TalkToAPI.V1.Repositories.Contracts.IMessageRepository)">
+        <member name="M:TalkToAPI.V1.Controllers.MessageController.#ctor(TalkToAPI.V1.Repositories.Contracts.IMessageRepository,AutoMapper.IMapper)">
             <summary>
             Construtor
             </summary>
             <param name="messageRepository">Repositório mensagem</param>
+            <param name="mapper">Auto Mapper</param>
         </member>
         <member name="M:TalkToAPI.V1.Controllers.MessageController.GetAll(System.String,System.String)">
             <summary>
@@ -205,6 +206,16 @@
         <member name="P:TalkToAPI.V1.Models.DTO.LinkDTO.Method">
             <summary>
             Method
+            </summary>
+        </member>
+        <member name="T:TalkToAPI.V1.Models.DTO.ListDTO`1">
+            <summary>
+            Classe lista de objetos
+            </summary>
+        </member>
+        <member name="P:TalkToAPI.V1.Models.DTO.ListDTO`1.List">
+            <summary>
+            Lista
             </summary>
         </member>
         <member name="T:TalkToAPI.V1.Models.DTO.LoginDTO">

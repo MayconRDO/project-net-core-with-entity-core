@@ -72,6 +72,7 @@ namespace TalkToAPI
                 conf.ReturnHttpNotAcceptable = true;
                 conf.InputFormatters.Add(new XmlSerializerInputFormatter(conf));
                 conf.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                conf.OutputFormatters.OfType<JsonOutputFormatter>().FirstOrDefault();
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
