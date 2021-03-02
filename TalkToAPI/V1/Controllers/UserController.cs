@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using TalkToAPI.V1.Models;
@@ -20,6 +22,7 @@ namespace TalkToAPI.V1.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IApplicationUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenRepository _tokenRepository;
@@ -28,33 +31,34 @@ namespace TalkToAPI.V1.Controllers
         /// Construtor
         /// </summary>
         /// <param name="userRepository">Repositório do Usuário</param>
-        /// <param name="signInManager">Login da classe UseManager</param>
         /// <param name="userManager">Interface dos serviços da classe UserManager</param>
         /// <param name="tokenRepository">Repositório do Token</param>
+        /// <param name="mapper">Utilização do Mapper</param>
         public UserController(IApplicationUserRepository userRepository,
                              UserManager<ApplicationUser> userManager,
-                             ITokenRepository tokenRepository)
+                             ITokenRepository tokenRepository,
+                             IMapper mapper)
         {
             _userRepository = userRepository;
-            //_signInManager = signInManager;
             _userManager = userManager;
             _tokenRepository = tokenRepository;
+            _mapper = mapper;
         }
 
         /// <summary>
         /// Realizar login
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="loginDTO">Dados do Login</param>
         /// <returns></returns>
         [HttpPost("login")]
-        public ActionResult Login([FromBody] UserDTO user)
+        public ActionResult Login([FromBody] LoginDTO loginDTO)
         {
             ModelState.Remove("PasswordConfirmation");
             ModelState.Remove("Name");
 
             if (ModelState.IsValid)
             {
-                ApplicationUser applicationUser = _userRepository.Get(user.Email, user.Password);
+                ApplicationUser applicationUser = _userRepository.Get(loginDTO.Email, loginDTO.Password);
 
                 if (applicationUser != null)
                 {
@@ -82,7 +86,16 @@ namespace TalkToAPI.V1.Controllers
         [HttpGet("")]
         public ActionResult GetAll()
         {
-            return Ok(_userManager.Users);
+            var users = _userManager.Users.ToList();
+
+            var usersDTO = _mapper.Map<List<ApplicationUser>, List<UserDTO>>(users);
+
+            foreach (var userDTO in usersDTO)
+            {
+                userDTO.Links.Add(new LinkDTO("_self", Url.Link("Get", new { id = userDTO.Id}), "GET"));
+            }
+
+            return Ok(usersDTO);
         }
 
         /// <summary>
@@ -91,7 +104,7 @@ namespace TalkToAPI.V1.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "Get")]
         public ActionResult Get(string id)
         {
             var user = _userManager.FindByIdAsync(id).Result;
@@ -101,7 +114,11 @@ namespace TalkToAPI.V1.Controllers
                 return NotFound();
             }
 
-            return Ok(user);
+            var userDTO = _mapper.Map<ApplicationUser, UserDTO>(user);
+            userDTO.Links.Add(new LinkDTO("_self", Url.Link("Get", new { id = userDTO.Id }), "GET"));
+            userDTO.Links.Add(new LinkDTO("_update", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+
+            return Ok(userDTO);
         }
 
         /// <summary>
@@ -135,7 +152,7 @@ namespace TalkToAPI.V1.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        [HttpPost("")]
+        [HttpPost("", Name = "Add")]
         public ActionResult Add([FromBody] UserDTO user)
         {
             if (ModelState.IsValid)
@@ -162,7 +179,12 @@ namespace TalkToAPI.V1.Controllers
                 }
                 else
                 {
-                    return Ok(applicationUser);
+                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(applicationUser);
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("Add", new { id = userDTO.Id }), "POST"));
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("Get", new { id = userDTO.Id }), "GET"));
+                    userDTO.Links.Add(new LinkDTO("_atualizar", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+
+                    return Ok(userDTO);
                 }
             }
             else
@@ -178,7 +200,7 @@ namespace TalkToAPI.V1.Controllers
         /// <param name="user">DTO usuário</param>
         /// <returns></returns>
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "Update")]
         public ActionResult Update(string id, [FromBody] UserDTO user)
         {
             ApplicationUser applicationUser = _userManager.GetUserAsync(HttpContext.User).Result;
@@ -207,7 +229,11 @@ namespace TalkToAPI.V1.Controllers
                 }
                 else
                 {
-                    return Ok(applicationUser);
+                    var userDTO = _mapper.Map<ApplicationUser, UserDTO>(applicationUser);
+                    userDTO.Links.Add(new LinkDTO("_self", Url.Link("Update", new { id = userDTO.Id }), "PUT"));
+                    userDTO.Links.Add(new LinkDTO("_get", Url.Link("Get", new { id = userDTO.Id }), "GET"));
+                    
+                    return Ok(userDTO);                    
                 }
             }
             else

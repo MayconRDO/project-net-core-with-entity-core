@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -74,6 +75,31 @@ namespace TalkToAPI.V1.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        /// <summary>
+        /// Alteração parcial da mensagem
+        /// </summary>
+        /// <param name="id">Identificador</param>
+        /// <param name="jsonPatch">Objeto mensagem</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPatch("{id}")]
+        public ActionResult UpdatePartial(int id, [FromBody] JsonPatchDocument<Message> jsonPatch)
+        {
+            if (jsonPatch == null)
+            {
+                return BadRequest();
+            }
+
+            var message = _messageRepository.Get(id);
+
+            jsonPatch.ApplyTo(message);
+            message.ModifiedDate = DateTime.Now;
+
+            _messageRepository.Update(message);
+
+            return Ok(message);
         }
     }
 }

@@ -25,6 +25,15 @@ namespace TalkToAPI.V1.Repositories
         }
 
         /// <summary>
+        /// Obter mensagem por ID
+        /// </summary>
+        /// <param name="id">Identificador da mensagem</param>
+        public Message Get(int id)
+        {
+            return _context.Messages.Find(id);
+        }
+
+        /// <summary>
         /// Obter usuário
         /// </summary>
         /// <param name="userFrom">Usuário remetente</param>
@@ -32,7 +41,7 @@ namespace TalkToAPI.V1.Repositories
         /// <returns></returns>
         public List<Message> GetAll(string userFrom, string userTo)
         {
-            return _context.Messages.Where(m => (m.FromId == userFrom || m.FromId == userTo) 
+            return _context.Messages.Where(m => (m.FromId == userFrom || m.FromId == userTo)
                                              && (m.ToId == userFrom || m.ToId == userTo)).ToList();
         }
 
@@ -46,5 +55,14 @@ namespace TalkToAPI.V1.Repositories
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// Alterar mensagem
+        /// </summary>
+        /// <param name="message">Objeto Mensagem</param>
+        public void Update(Message message)
+        {
+            _context.Messages.Update(message);
+            _context.SaveChanges();
+        }        
     }
 }

@@ -1,47 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TalkToAPI.V1.Models
+namespace TalkToAPI.V1.Models.DTO
 {
     /// <summary>
-    /// Classe do objeto Mensagem
+    /// Classe de Mensagem DTO
     /// </summary>
-    public class Message
+    public class MessageDTO : BaseDTO
     {
         /// <summary>
         /// Identificador do objeto
         /// </summary>
-        [Key]
         public int Id { get; set; }
 
         /// <summary>
         /// Usuário remetente
         /// </summary>
-        [ForeignKey("FromId")]
         public ApplicationUser From { get; set; }
 
         /// <summary>
         /// Identificador do remetente
         /// </summary>
-        [Required]
         public string FromId { get; set; }
 
         /// <summary>
         /// Usuário destion
         /// </summary>
-        [ForeignKey("ToId")]
         public ApplicationUser To { get; set; }
 
         /// <summary>
         /// Identificador do destinatário
         /// </summary>
         public string ToId { get; set; }
-                
+
         /// <summary>
         /// Texto da mensagem
         /// </summary>
-        [Required]
         public string Text { get; set; }
 
         /// <summary>

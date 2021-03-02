@@ -5,8 +5,13 @@ namespace TalkToAPI.V1.Models.DTO
     /// <summary>
     /// Classe DTO do usuário
     /// </summary>
-    public class UserDTO
+    public class UserDTO : BaseDTO
     {
+        /// <summary>
+        /// Identificador
+        /// </summary>
+        public string Id { get; set; }
+
         /// <summary>
         /// Nome
         /// </summary>

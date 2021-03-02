@@ -12,6 +12,13 @@ namespace TalkToAPI.V1.Repositories.Contracts
     public interface IMessageRepository
     {
         /// <summary>
+        /// Obter mensagem por ID
+        /// </summary>
+        /// <param name="id">Identificador da mensagem</param>
+        /// <returns></returns>
+        Message Get(int id);
+
+        /// <summary>
         /// Obter todas as mensagens
         /// </summary>
         /// <param name="userFrom">Usuário remetente</param>
@@ -24,5 +31,11 @@ namespace TalkToAPI.V1.Repositories.Contracts
         /// </summary>
         /// <param name="message">Objeto Mensagem</param>
         void Add(Message message);
+
+        /// <summary>
+        /// Alterar mensagem
+        /// </summary>
+        /// <param name="message">Objeto Mensagem</param>
+        void Update(Message message);   
     }
 }
