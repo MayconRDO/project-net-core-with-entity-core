@@ -66,6 +66,17 @@ namespace TalkToAPI
                 op.SuppressModelStateInvalidFilter = true;
             });
 
+            // Politica de acesso
+            services.AddCors(conf =>
+            {
+                conf.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins("https://localhost:44306/", "http://localhost:50558/")
+                          .WithMethods("GET")
+                          .WithHeaders("Accept", "Authorization");
+                });
+            });
+
             services.AddMvc(conf =>
             {
                 // Suporta formato XML
@@ -188,6 +199,7 @@ namespace TalkToAPI
 
             app.UseAuthentication();
             app.UseStatusCodePages();
+            app.UseCors();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(conf =>
